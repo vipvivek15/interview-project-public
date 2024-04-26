@@ -68,7 +68,11 @@ $response = Invoke-WebRequest -Method Delete `
 @PostMapping("/credit-card:update-balance")                                                        ->            @PostMapping("/credit-card/update-balance")
 
 
-@DeleteMapping("/user")                                                                            ->            @DeleteMapping("/user/{userId}")              
+@DeleteMapping("/user")                                                                            ->            @DeleteMapping("/user/{userId}")    
+
+## Use of Generative AI tools
+
+I have used generative AI tools in the process of completing this project to assist with implementation details. 
 
 ## Introduction
 
