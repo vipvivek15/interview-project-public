@@ -1,5 +1,75 @@
 # Shepherd Money Interview Project
 
+## How I tested
+
+First I ensured the project builds with gradle. To ensure the project build the sdk needs to be be openjdk17-jdk oracle, the language level needs to be 17. After this, I ensured that gradle is using jdk 17 by setting the environment variable for JAVA_HOME as jdk-17. Since I have a windows computer, I had to install jdk-17 since I did not have it installed earlier. 
+Link to install java jdk-17 for windows: https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
+
+After ensuring gradle uses java jdk-17, I first ran ./gradlew build to build the project and generate a jar file which I have attached in the main Github directory. 
+Then I ran ./gradlew bootrun to run the java application which starts the tomcat server. 
+While making queries, I also accessed the database located at this URL: http://localhost:8080/h2-ui
+
+I made the queries using Invoke-WebRequest. Here are some sample queries I made to test all possible edge cases:
+
+1) Creation of a user
+$response = Invoke-WebRequest -Method Put `
+>>                   -Uri "http://localhost:8080/user" `
+>>                   -ContentType "application/json" `
+>>                   -Body '{
+>>                           "name": "Vivek Ponnala",
+>>                           "email": "vipvivek15@gmail.com"
+>>                         }'
+2) Adding credit card to a user
+ $response = Invoke-WebRequest -Method Post `
+>>                               -Uri "http://localhost:8080/credit-card" `
+>>                               -ContentType "application/json" `
+>>                               -Body '{
+>>                                       "userId": 11202,
+>>                                       "cardNumber": "987",
+>>                                       "cardIssuanceBank": "Chase"
+>>                                     }'
+3) Getting all credit card information of a user
+    $response = Invoke-WebRequest -Method Get `
+>>                               -Uri "http://localhost:8080/credit-card/all/11202" `
+>>                               -Headers @{Accept="application/json"}
+4) Getting the user id from the credit card number
+   $response = Invoke-WebRequest -Method Get `
+>>                               -Uri "http://localhost:8080/credit-card/user-id/4111111111111111" `
+>>                               -Headers @{Accept="application/json"}
+5) Updating the balance of a credit card
+   $response = Invoke-WebRequest -Method Post `
+>>                               -Uri "http://localhost:8080/credit-card/update-balance" `
+>>                               -ContentType "application/json" `
+>>                               -Body '[
+>>                                       {
+>>                                         "creditCardNumber": "493",
+>>                                        "balanceDate": "2024-04-11",
+>>                                         "balanceAmount": 470
+>>                                       },
+>>                                       {
+>>                                         "creditCardNumber": "493",
+>>                                         "balanceDate": "2024-04-14",
+>>                                         "balanceAmount": 430
+>>                                       }
+>>                                      ]'
+6) Deleting a user with the userId
+$response = Invoke-WebRequest -Method Delete `
+>>                               -Uri "http://localhost:8080/user/11202" `
+>>                               -UseBasicParsing
+
+## Changes made in code
+
+ @GetMapping("/credit-card:all")                                                                   ->           @GetMapping("/credit-card/all/{userId}")
+                    
+
+@GetMapping("/credit-card:user-id")                                                                ->            @GetMapping("/credit-card/user-id/{creditCardNumber}")
+
+
+@PostMapping("/credit-card:update-balance")                                                        ->            @PostMapping("/credit-card/update-balance")
+
+
+@DeleteMapping("/user")                                                                            ->            @DeleteMapping("/user/{userId}")              
+
 ## Introduction
 
 Thanks for your interest in applying to Shepherd Money! Complete this short toy project before your interview to help us evaluate your skills as a software engineer. It shouldn't take more than an hour if you know Spring Boot. We look forward to seeing your work and learning more about you!
